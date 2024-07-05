@@ -1,11 +1,13 @@
 # pymelsec
-A Python3 implementation of MELSEC Communication Protocol that allows you to interact with a Mitsubishi PLC.  This library was inspired by [pymcprotocol](https://github.com/senrust/pymcprotocol), but has been
+- A Python3 implementation of MELSEC Communication Protocol that allows you to interact with a Mitsubishi PLC.  This library was inspired by [pymcprotocol](https://github.com/senrust/pymcprotocol), but has been
 rewritten to have additional features and be more flexible.
 
+- It has been modified to support UDP protocol, only for Type3E
+
+
 ## Installation 
-```console 
-pip3 install pymelsec
-```
+
+Clone the repository and copy the pymelsec package.
 
 ## Protocol type
 pymelsec natively supports MELSEC Communication 3E type.  Type 4E is implemented but has not been fully tested.  
@@ -82,7 +84,7 @@ __PORT = 5007           # OPTIONAL: default is 5007
 __PLC_TYPE = 'iQ-R'     # OPTIONAL: default is 'Q'
                         #   options: 'L', 'QnA', 'iQ-L', 'iQ-R'
 
-with Type4E(host=__HOST, port=__PORT, plc_type=__PLC_TYPE) as plc:
+with Type4E(host=__HOST, port=__PORT, plc_type=__PLC_TYPE, protocol="TCP") as plc:
     """
     Set communication access mode option
         example: read 5 contiguous words starting from "D0" to "D4"
