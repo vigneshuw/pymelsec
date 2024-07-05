@@ -3,3 +3,4 @@ build/
 dist/
 pymelsec.egg-info
 test/
+.idea/

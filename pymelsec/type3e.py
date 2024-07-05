@@ -67,12 +67,13 @@ class Type3E:
     __log = logging.getLogger(f"{__module__}.{__qualname__}")
 
 
-    def __init__(self, host:str, port:int=5007, plc_type="Q"):
+    def __init__(self, host:str, port:int=5007, plc_type="Q", protocol="TCP"):
         """
         Constructor
         """
 
         self._set_plc_type(plc_type)
+        self.protocol = protocol.upper()
         # specify host and port
         if host:
             self.host = host
@@ -126,9 +127,18 @@ class Type3E:
 
         self._ip = ip
         self._port = port
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # Choose connection depending on protocol
+        if self.protocol == "TCP":
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        elif self.protocol == "UDP":
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        else:
+            raise ValueError("Unsupported protocol. Use 'TCP' or 'UDP'.")
+
         self._sock.settimeout(self.sock_timeout)
-        self._sock.connect((ip, port))
+        if self.protocol == "TCP":
+            self._sock.connect((ip, port))
         self._is_connected = True
 
 
@@ -152,7 +162,12 @@ class Type3E:
         if self._is_connected:
             if self._debug:
                 self.__log.debug(send_data.hex())
-            self._sock.send(send_data)
+
+            # Depending on protocol
+            if self.protocol == "TCP":
+                self._sock.send(send_data)
+            elif self.protocol == "UDP":
+                self._sock.sendto(send_data, (self._ip, self._port))
         else:
             raise Exception("socket is not connected. Please use connect method")
 
@@ -165,7 +180,10 @@ class Type3E:
             recv_data
         """
 
-        recv_data = self._sock.recv(self._SOCKBUFSIZE)
+        if self.protocol == "TCP":
+            recv_data = self._sock.recv(self._SOCKBUFSIZE)
+        else:
+            recv_data = self._sock.recvfrom(self._SOCKBUFSIZE)
 
         return recv_data
 
