@@ -183,7 +183,7 @@ class Type3E:
         if self.protocol == "TCP":
             recv_data = self._sock.recv(self._SOCKBUFSIZE)
         else:
-            recv_data = self._sock.recvfrom(self._SOCKBUFSIZE)
+            recv_data = self._sock.recvfrom(self._SOCKBUFSIZE)[0]
 
         return recv_data
 
